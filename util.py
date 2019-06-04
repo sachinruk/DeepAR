@@ -1,4 +1,5 @@
 from torch.nn.utils.rnn import *
+from math import ceil
 
 def get_rnn_batch(batch_X, batch_Y):
     """ Takes a batch of data and packs them in the format required for RNNs.
@@ -45,9 +46,18 @@ def create_X(X, T, bs):
     dataY = X[1:].split(T)
     dataX = X[:-1].split(T)
 
-    batches_per_epoch = len(dataX) // bs
-    for i in range(bs):
+    batches_per_epoch = ceil(len(dataX)/bs)
+    for i in range(batches_per_epoch):
         # batches will be spaced out by batches_per_epoch
         idx = range(i,len(dataX),batches_per_epoch) 
         packedX, packedY = get_rnn_batch([dataX[i] for i in idx], [dataY[i] for i in idx])
         yield packedX, packedY
+
+"""
+We can test for create_X using following:
+x = torch.arange(20)[:,None].repeat(1,3).float()
+batches = create_X(x, 2, 5)
+for i, batch in enumerate(batches):
+    print('Batch number', i)
+    print(batch[0])
+"""
