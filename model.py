@@ -45,9 +45,13 @@ class LSTM_(nn.Module):
         self.lstm = nn.LSTM(f,h,n)
         self.linear = nn.Linear(h, f)
         self.h = None
+    
+    def init_hidden(self):
+        self.h = None
 
-    def forward(self, x, h=None):
-        out, self.h = self.lstm(x, h)
-        y = self.linear(out)
+    def forward(self, x):
+        out, self.h = self.lstm(x, self.h)
+        self.h[0].detach_(); self.h[1].detach_()
+        y = self.linear(out[0])
 
         return y, self.h
