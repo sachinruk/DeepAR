@@ -40,18 +40,44 @@ class ProbabilisticLSTM(nn.Module):
 
 
 class LSTM_(nn.Module):
-    def __init__(self, f,h,n):
+    def __init__(self, f, h, n, bs):
+        """
+        f: The number of expected features in the input `x`  
+        h: The number of features in the hidden state `h`  
+        n: Number of recurrent layers. E.g., setting `num_layers=2`  
+        would mean stacking two LSTMs together to form a `stacked LSTM`,  
+        with the second LSTM taking in outputs of the first LSTM and  
+        computing the final results. Default: 1 
+        bs: Initial size of batch 
+        """
         super().__init__()
         self.lstm = nn.LSTM(f,h,n)
         self.linear = nn.Linear(h, f)
+
+        self.n = n
+        self.hidden = h
+        self.bs = bs
         self.h = None
     
     def init_hidden(self):
         self.h = None
 
-    def forward(self, x):
+    def forward(self, x, bs):
+        # the last few batches might have different batch sizes
+        if self.h:
+            self.h = [h_[:,:bs,:] for h_ in self.h] 
         out, self.h = self.lstm(x, self.h)
-        self.h[0].detach_(); self.h[1].detach_()
+        for h in self.h:
+            h.detach_()
+        # self.h[0].detach_(); self.h[1].detach_()
         y = self.linear(out[0])
 
         return y, self.h
+    
+    def predict(self, x):
+        out, self.h = self.lstm(x, self.h)
+        y = self.linear(out)
+
+        return y
+        
+

@@ -51,7 +51,7 @@ def create_X(X, T, bs):
         # batches will be spaced out by batches_per_epoch
         idx = range(i,len(dataX),batches_per_epoch) 
         packedX, packedY = get_rnn_batch([dataX[i] for i in idx], [dataY[i] for i in idx])
-        yield packedX, packedY
+        yield packedX, packedY, len(idx)
 
 """
 We can test for create_X using following:
