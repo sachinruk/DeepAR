@@ -1,4 +1,4 @@
-# Torch DeepAR
+# PyTorch LSTMs
 
-Implementation of [`DeepAR: Probabilistic Forecasting with
-Autoregressive Recurrent Networks`](https://arxiv.org/pdf/1704.04110.pdf) in pyTorch.
+Example of how to train a stateful model in pytorch.
+![preds](./predictions.png)
